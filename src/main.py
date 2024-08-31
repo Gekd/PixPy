@@ -215,7 +215,7 @@ class Application(tk.Frame):
     def update_gif(self):
         self.gif_label.config(image=self.frames[self.current_frame])
         self.current_frame = (self.current_frame + 1) % len(self.frames)
-        self.after(50, self.update_gif)  
+        self.after(50, self.update_gif)
 
     def upload_design(self):
         color_data = self.convert_grid_to_text(self.drawing_grid)
@@ -228,7 +228,7 @@ class Application(tk.Frame):
             self.frames = self.load_gif()
             self.gif_label.grid(row=0, column=0, padx=10, pady=10, columnspan=self.columns)
             self.update_gif()
-        
+
         else:
             # Add button to retry upload_design
             retry_button = ttk.Button(self, text="Retry upload", command=self.upload_design, width=self.button_width)

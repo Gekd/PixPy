@@ -24,10 +24,8 @@ def github_commit(data):
         # 2. Delete its contents
         shutil.rmtree(local_uploads_path)
         os.makedirs(local_uploads_path)
-        print("Existing 'uploads' folder content deleted.")
     else:
         os.makedirs(local_uploads_path)
-        print("No existing 'uploads' folder. Created a new one.")
 
 
     def get_date_from_day_number(year, day_number):
@@ -45,11 +43,11 @@ def github_commit(data):
     today = datetime.now()
     day_of_year = today.timetuple().tm_yday
 
-    print(f"Day of the year: {day_of_year}")
-    day_count = 0
+    day_count = 1
 
     for value in data:
         if value != "X":
+            # print(f"Day {get_date_from_day_number(2024, day_count)}: {value}")
             if day_count >= day_of_year:
                 date = get_date_from_day_number(2024, day_count)
                 
@@ -61,11 +59,43 @@ def github_commit(data):
                 with open(commits_file_path, 'w', encoding='utf-8') as file:
                     file.write(value)
             day_count += 1
-                    
+
+    def delete_directory_from_github(repo, dir_path, commit_msg):
+    # Authenticate with GitHub
+
+        # Get the contents of the directory
+        try:
+            contents = repo.get_contents(dir_path)
+        except Exception as e:
+            print(f"Error retrieving contents: {e}")
+            return False
+
+        # Recursively delete files and subdirectories
+        def delete_contents(path):
+            contents = repo.get_contents(path)
+            for content in contents:
+                if content.type == "dir":
+                    delete_contents(content.path)
+                else:
+                    try:
+                        repo.delete_file(content.path, commit_msg, content.sha)
+                        print(f"Deleted file {content.path}")
+                    except Exception as e:
+                        print(f"Error deleting file {content.path}: {e}")
+                        return False
+            try:
+                repo.delete_file(path, commit_msg, contents[0].sha)  # delete the directory itself
+                print(f"Deleted directory {path}")
+            except Exception as e:
+                print(f"Error deleting directory {path}: {e}")
+                return False
+            return True
+
+        return delete_contents(dir_path)
 
 
     # 4. Commit the "uploads" folder to GitHub
-    """def upload_directory_to_github(local_dir, remote_dir, commit_msg):
+    def upload_directory_to_github(local_dir, remote_dir, commit_msg):
         for root, _, files in os.walk(local_dir):
             for file in files:
                 local_path = os.path.join(root, file)
@@ -77,11 +107,10 @@ def github_commit(data):
 
                 try:
                     repo.create_file(remote_path, commit_msg, data)
-                    print(f"Uploaded {remote_path} to GitHub.")
                 except Exception as e:
-                    print(f"Failed to upload {remote_path}: {e}")
+                    print(f"An error occurred: {e}")
+                    return False
+        return True
 
-    upload_directory_to_github(local_uploads_path, "uploads", commit_message)"""
-
-    print("All files committed to GitHub.")
-    return True
+    delete_directory_from_github(repo, "src/uploads", "Deleted old uploads")
+    upload_directory_to_github(local_uploads_path, "src/uploads", commit_message)
