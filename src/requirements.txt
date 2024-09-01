@@ -1,0 +1,6 @@
+github
+datetime
+python-dotenv
+os
+tkinter
+PIL

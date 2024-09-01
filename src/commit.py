@@ -5,13 +5,13 @@ import os
 import shutil
 
 def github_commit(data):
-
+    print(data)
     data = [item for sublist in data for item in sublist.split(", ")]
 
     load_dotenv()
     token = os.getenv("GITHUB_TOKEN")
 
-    repo_name = "Gekd/PixPy"
+    repo_name = "Gekd/Contribution-Art"
     local_uploads_path = "src/uploads"
     commit_message = "Automated commit for the day"
 
@@ -111,7 +111,7 @@ def github_commit(data):
                     return False
         return True
 
-    try:
+    """try:
         delete_directory_from_github(repo, "src/uploads", "Deleted old uploads")
     except Exception as e:
         print(f"An error occurred: {e}")
@@ -122,4 +122,5 @@ def github_commit(data):
         return True
     except Exception as e:
         print(f"An error occurred: {e}")
-        return False
+        return False"""
+    True
