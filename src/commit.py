@@ -62,7 +62,6 @@ def github_commit(data):
 
     def delete_directory_from_github(repo, dir_path, commit_msg):
     # Authenticate with GitHub
-
         # Get the contents of the directory
         try:
             contents = repo.get_contents(dir_path)
@@ -112,5 +111,15 @@ def github_commit(data):
                     return False
         return True
 
-    delete_directory_from_github(repo, "src/uploads", "Deleted old uploads")
-    upload_directory_to_github(local_uploads_path, "src/uploads", commit_message)
+    try:
+        delete_directory_from_github(repo, "src/uploads", "Deleted old uploads")
+    except Exception as e:
+        print(f"An error occurred: {e}")
+        
+    
+    try:
+        upload_directory_to_github(local_uploads_path, "src/uploads", commit_message)
+        return True
+    except Exception as e:
+        print(f"An error occurred: {e}")
+        return False
